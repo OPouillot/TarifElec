@@ -1,0 +1,14 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+.vscode
+.venv
+cookies_snapshot
+.env
+
+#First version files
+/.ipynb_checkpoints
+EDF_calc_ipynb
+
+# local save
+/data/Enedis
