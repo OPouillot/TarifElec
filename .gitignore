@@ -6,9 +6,6 @@ __pycache__/
 cookies_snapshot
 .env
 
-#First version files
-.ipynb_checkpoints
-EDF_calc.ipynb
 
 # local save
 /data/Enedis

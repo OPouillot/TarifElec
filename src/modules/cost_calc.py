@@ -17,7 +17,7 @@ def prix_base(data, puissance, tarif):
     
     prix_base = abo_tot + tarif_kwh * sum_kwh
     
-    return {'Abonnement': 'Base', 'Coût Total': round(prix_base, 2)}
+    return {'Abonnement': 'EDF - Base', 'Coût Total': round(prix_base, 2)}
 
 def prix_hc(data, puissance,  tarif):
     abo = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Abonnement']
@@ -31,7 +31,7 @@ def prix_hc(data, puissance,  tarif):
     
     prix_hc = abo_tot + tarif_kwh_hp * sum_kwh_hp + tarif_kwh_hc * sum_kwh_hc
     
-    return {'Abonnement': 'Heures Creuses', 'Coût Total': round(prix_hc, 2)}
+    return {'Abonnement': 'EDF - Heures Creuses', 'Coût Total': round(prix_hc, 2)}
 
 def prix_tempo(data, puissance,  tarif):
     abo = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Abonnement']
@@ -67,7 +67,7 @@ def prix_tempo(data, puissance,  tarif):
                   tarif_kwh_hp_rouge * sum_kwh_hp_rouge + 
                   tarif_kwh_hc_rouge * sum_kwh_hc_rouge)
     
-    return {'Abonnement': 'Tempo', 'Coût Total': round(prix_tempo, 2)}
+    return {'Abonnement': 'EDF - Tempo', 'Coût Total': round(prix_tempo, 2)}
 
 def prix_zen_we(data, puissance, tarif):
     abo = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Abonnement']
@@ -81,7 +81,7 @@ def prix_zen_we(data, puissance, tarif):
     
     prix_zen_we = abo_tot + tarif_kwh_hp * sum_kwh_hp + tarif_kwh_hc * sum_kwh_hc
     
-    return {'Abonnement': 'Zen Week-end', 'Coût Total': round(prix_zen_we, 2)}
+    return {'Abonnement': 'EDF - Zen Week-end', 'Coût Total': round(prix_zen_we, 2)}
 
 def prix_zen_we_hc(data, puissance, tarif):
     abo = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Abonnement']
@@ -95,7 +95,7 @@ def prix_zen_we_hc(data, puissance, tarif):
     
     prix_zen_we_hc = abo_tot + tarif_kwh_hp * sum_kwh_hp + tarif_kwh_hc * sum_kwh_hc
     
-    return {'Abonnement': 'Zen Week-end Heures Creuses', 'Coût Total': round(prix_zen_we_hc, 2)}
+    return {'Abonnement': 'EDF - Zen Week-end + Heures Creuses', 'Coût Total': round(prix_zen_we_hc, 2)}
 
 def prix_other_supplier(data, tarifs_other, horaires_other, is_we=False):
     sum_kwh = dict()
@@ -120,5 +120,5 @@ def prix_other_supplier(data, tarifs_other, horaires_other, is_we=False):
     for key, value in horaires_other.items():
         prix = prix + (tarifs_other[key]/100 * sum_kwh[key])
     
-    return {'Abonnement': 'Autre Fournisseur', 'Coût Total': round(prix, 2)}
+    return {'Abonnement': 'Autre fournisseur', 'Coût Total': round(prix, 2)}
 
