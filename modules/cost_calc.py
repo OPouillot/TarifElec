@@ -1,5 +1,8 @@
+import pandas as pd
+import numpy
 
-def abo_cost(data, abo):
+
+def abo_cost(data: pd.DataFrame, abo: float) -> float:
     month_start = data["Horaire"].iloc[0].month
     month_stop = data["Horaire"].iloc[-1].month
     year_start = data["Horaire"].iloc[0].year
@@ -8,23 +11,23 @@ def abo_cost(data, abo):
     cost = abo * ((year_stop - year_start) * 12 + month_stop - month_start)
     return cost
 
-def prix_base(data, puissance, tarif):
-    abo = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Abonnement']
+def prix_base(data: pd.DataFrame, puissance: int, tarif: pd.DataFrame) -> dict[str, float]:
+    abo = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Abonnement'].iloc[0]
     abo_tot = abo_cost(data, abo)
     
-    tarif_kwh = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix'] / 100
+    tarif_kwh = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix'].iloc[0] / 100
     sum_kwh = data['Puissance'].sum() / 2000
     
     prix_base = abo_tot + tarif_kwh * sum_kwh
     
     return {'Abonnement': 'EDF - Base', 'Coût Total': round(prix_base, 2)}
 
-def prix_hc(data, puissance,  tarif):
-    abo = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Abonnement']
+def prix_hc(data: pd.DataFrame, puissance: int,  tarif: pd.DataFrame) -> dict[str, float]:
+    abo = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Abonnement'].iloc[0]
     abo_tot = abo_cost(data, abo)
     
-    tarif_kwh_hp = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix HP'] / 100
-    tarif_kwh_hc = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix HC'] / 100
+    tarif_kwh_hp = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix HP'].iloc[0] / 100
+    tarif_kwh_hc = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix HC'].iloc[0] / 100
     
     sum_kwh_hp = data['Puissance'].loc[data['HC_EDF'] == False].sum() / 2000
     sum_kwh_hc = data['Puissance'].loc[data['HC_EDF'] == True].sum() / 2000
@@ -33,16 +36,16 @@ def prix_hc(data, puissance,  tarif):
     
     return {'Abonnement': 'EDF - Heures Creuses', 'Coût Total': round(prix_hc, 2)}
 
-def prix_tempo(data, puissance,  tarif):
-    abo = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Abonnement']
+def prix_tempo(data: pd.DataFrame, puissance: int,  tarif: pd.DataFrame) -> dict[str, float]:
+    abo = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Abonnement'].iloc[0]
     abo_tot = abo_cost(data, abo)
     
-    tarif_kwh_hp_bleu = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix Bleu HP'] / 100
-    tarif_kwh_hc_bleu = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix Bleu HC'] / 100
-    tarif_kwh_hp_blanc = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix Blanc HP'] / 100
-    tarif_kwh_hc_blanc = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix Blanc HC'] / 100
-    tarif_kwh_hp_rouge = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix Rouge HP'] / 100
-    tarif_kwh_hc_rouge = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix Rouge HC'] / 100
+    tarif_kwh_hp_bleu = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix Bleu HP'].iloc[0] / 100
+    tarif_kwh_hc_bleu = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix Bleu HC'].iloc[0] / 100
+    tarif_kwh_hp_blanc = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix Blanc HP'].iloc[0] / 100
+    tarif_kwh_hc_blanc = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix Blanc HC'].iloc[0] / 100
+    tarif_kwh_hp_rouge = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix Rouge HP'].iloc[0] / 100
+    tarif_kwh_hc_rouge = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix Rouge HC'].iloc[0] / 100
     
     sum_kwh_hp_bleu = data['Puissance'].loc[(data['HC_tempo'] == False)
                                             & (data['tempo_blanc'] == False)
@@ -69,12 +72,12 @@ def prix_tempo(data, puissance,  tarif):
     
     return {'Abonnement': 'EDF - Tempo', 'Coût Total': round(prix_tempo, 2)}
 
-def prix_zen_we(data, puissance, tarif):
-    abo = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Abonnement']
+def prix_zen_we(data: pd.DataFrame, puissance: int,  tarif: pd.DataFrame) -> dict[str, float]:
+    abo = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Abonnement'].iloc[0]
     abo_tot = abo_cost(data, abo)
     
-    tarif_kwh_hp = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix HP'] / 100
-    tarif_kwh_hc = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix HC'] / 100
+    tarif_kwh_hp = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix HP'].iloc[0] / 100
+    tarif_kwh_hc = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix HC'].iloc[0] / 100
     
     sum_kwh_hp = data['Puissance'].loc[data['WE'] == False].sum() / 2000
     sum_kwh_hc = data['Puissance'].loc[data['WE'] == True].sum() / 2000
@@ -83,21 +86,20 @@ def prix_zen_we(data, puissance, tarif):
     
     return {'Abonnement': 'EDF - Zen Week-end', 'Coût Total': round(prix_zen_we, 2)}
 
-def prix_zen_we_hc(data, puissance, tarif):
-    abo = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Abonnement']
+def prix_zen_we_hc(data: pd.DataFrame, puissance: int,  tarif: pd.DataFrame) -> dict[str, float]:
+    abo = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Abonnement'].iloc[0]
     abo_tot = abo_cost(data, abo)
     
-    tarif_kwh_hp = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix HP'] / 100
-    tarif_kwh_hc = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix HC'] / 100
+    tarif_kwh_hp = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix HP'].iloc[0] / 100
+    tarif_kwh_hc = tarif.loc[tarif['Puissance Souscrite'] == puissance, 'Prix HC'].iloc[0] / 100
     
     sum_kwh_hp = data['Puissance'].loc[(data['WE'] == False) & (data['HC_EDF'] == False)].sum() / 2000
     sum_kwh_hc = data['Puissance'].loc[(data['WE'] == True) | (data['HC_EDF'] == True)].sum() / 2000
     
     prix_zen_we_hc = abo_tot + tarif_kwh_hp * sum_kwh_hp + tarif_kwh_hc * sum_kwh_hc
-    
     return {'Abonnement': 'EDF - Zen Week-end + Heures Creuses', 'Coût Total': round(prix_zen_we_hc, 2)}
 
-def prix_other_supplier(data, tarifs_other, horaires_other, is_we=False):
+def prix_other_supplier(data: pd.DataFrame, tarifs_other: dict, horaires_other: dict, is_we=False) -> dict[str, float]:
     sum_kwh = dict()
     keys = list(horaires_other.keys())
     abo_tot = abo_cost(data, tarifs_other["abo"])

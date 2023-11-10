@@ -1,16 +1,17 @@
 import pandas as pd
+import datetime as dt
 from datetime import datetime
 
 tempo_days = pd.read_csv("data/tempo_days.csv", sep=";")
 
 
-def missing_values(data):
+def missing_values(data: pd.DataFrame) -> pd.DataFrame:
     if data["Puissance"].isna().mean() < 0.1:
         data.fillna(0, inplace=True)
     return data
 
 
-def split_hours(data):
+def split_hours(data: pd.DataFrame) -> pd.DataFrame:
     new_rows = []
     all_horaires = pd.to_datetime(data['Horaire'])
     
@@ -30,28 +31,28 @@ def split_hours(data):
     return new_df
 
 
-def is_we(data):
+def is_we(data: pd.DataFrame) -> bool:
     if 5 <= data.weekday() <= 6:
         return True
     else:
         return False
 
 
-def is_tempo_white(data, tempo_blanc):
+def is_tempo_white(data: pd.DataFrame, tempo_blanc: list[datetime]) -> bool:
     if data.date() in tempo_blanc:
         return True
     else:
         return False
 
 
-def is_tempo_red(data, tempo_rouge):
+def is_tempo_red(data: pd.DataFrame, tempo_rouge: list[datetime]) -> bool:
     if data.date() in tempo_rouge:
         return True
     else:
         return False
 
 
-def set_hc(data, hc_start, hc_stop, name_hc):
+def set_hc(data: pd.DataFrame, hc_start: dt.time, hc_stop: dt.time, name_hc) -> pd.DataFrame:
     """Convertir les horaires de début et de fin en objets time
     """
     daytime = False
@@ -81,7 +82,7 @@ def set_hc(data, hc_start, hc_stop, name_hc):
     return data
 
 
-def data_completion(data, horaires_dict):
+def data_completion(data: pd.DataFrame, horaires_dict: dict[str, tuple[dt.time, dt.time]]) -> pd.DataFrame:
     
     blanc = tempo_days['Tempo_blanc'].dropna()
     rouge = tempo_days['Tempo_rouge'].dropna()

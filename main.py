@@ -13,12 +13,13 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-def get_months(data):
+def get_months(data: pd.DataFrame) -> str:
     return pd.to_datetime(data["Horaire"], utc=True).dt.strftime('%B %Y').unique()
 
 def submission():
     st.session_state.form_sub = True
     st.session_state.calc_done = False
+
 
 def main():
 
@@ -101,7 +102,6 @@ def main():
 
     # Si formulaire envoyé
     if st.session_state.form_sub and not st.session_state.calc_done:
-        
         with st.spinner('Calcul en cours ...'):
             
             # To be build from input data
@@ -142,13 +142,12 @@ def main():
             date_start = data.iloc[0,0].strftime("%d/%m/%Y")
             date_stop = data.iloc[-1,0].strftime("%d/%m/%Y")
 
-            costs = pd.DataFrame(columns=['Abonnement', 'Coût Total'])
-            costs = pd.concat([costs,
-                            pd.DataFrame(cost_calc.prix_base(data, puissance, tarif_base)),
-                            pd.DataFrame(cost_calc.prix_hc(data, puissance, tarif_hc)),
-                            pd.DataFrame(cost_calc.prix_tempo(data, puissance, tarif_tempo)),
-                            pd.DataFrame(cost_calc.prix_zen_we(data, puissance, tarif_zen_we)),
-                            pd.DataFrame(cost_calc.prix_zen_we_hc(data, puissance, tarif_zen_we_hc))], ignore_index=True)
+            costs = pd.DataFrame(data=[cost_calc.prix_base(data, puissance, tarif_base),
+                                        cost_calc.prix_hc(data, puissance, tarif_hc),
+                                        cost_calc.prix_tempo(data, puissance, tarif_tempo),
+                                        cost_calc.prix_zen_we(data, puissance, tarif_zen_we),
+                                        cost_calc.prix_zen_we_hc(data, puissance, tarif_zen_we_hc)],
+                                columns=['Abonnement', 'Coût Total'])
             if other_bool:
                 costs = pd.concat([costs,pd.DataFrame([cost_calc.prix_other_supplier(data, tarifs_other, horaires_other, is_we=we_bool)])], ignore_index=True)
             
@@ -168,7 +167,7 @@ def main():
             data = st.session_state.data
             date_start = data.iloc[0,0].strftime("%d/%m/%Y")
             date_stop = data.iloc[-1,0].strftime("%d/%m/%Y")
-
+            data
             costs
 
             col1, col2 = st.columns(2)
