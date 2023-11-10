@@ -1,8 +1,0 @@
-name: env_tarifelec
-channels:
-  - conda-forge
-dependencies:
-  - pandas==2.1.2
-  - Pillow==10.0.1
-  - plotly==5.9.0
-  - streamlit==1.28.1
