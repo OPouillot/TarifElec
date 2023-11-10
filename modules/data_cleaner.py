@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import datetime
 
-tempo_days = pd.read_csv("../data/tempo_days.csv", sep=";")
+tempo_days = pd.read_csv("data/tempo_days.csv", sep=";")
 
 
 def missing_values(data):
