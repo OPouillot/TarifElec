@@ -27,18 +27,18 @@ def main():
     if "calc_done" not in st.session_state:
         st.session_state.calc_done = False
     
-    image = Image.open('../data/icon.png')
+    image = Image.open('data/icon.png')
     col1, col2 = st.columns([1,4])
     with col1:
         st.image(image, use_column_width="auto")
     with col2:
         st.title("TarifElec - Optimiser son abonnement d'électricité !")
     
-    tarif_base = pd.read_csv('../data/tarifs/tarif_base.csv', sep=";")
-    tarif_hc = pd.read_csv('../data/tarifs/tarif_hc.csv', sep=";")
-    tarif_tempo = pd.read_csv('../data/tarifs/tarif_tempo.csv', sep=";")
-    tarif_zen_we = pd.read_csv('../data/tarifs/tarif_zen_we.csv', sep=";")
-    tarif_zen_we_hc =  pd.read_csv('../data/tarifs/tarif_zen_we_hc.csv', sep=";")
+    tarif_base = pd.read_csv('data/tarifs/tarif_base.csv', sep=";")
+    tarif_hc = pd.read_csv('data/tarifs/tarif_hc.csv', sep=";")
+    tarif_tempo = pd.read_csv('data/tarifs/tarif_tempo.csv', sep=";")
+    tarif_zen_we = pd.read_csv('data/tarifs/tarif_zen_we.csv', sep=";")
+    tarif_zen_we_hc =  pd.read_csv('data/tarifs/tarif_zen_we_hc.csv', sep=";")
 
     with st.sidebar:
         offre_actu = st.selectbox("Quelle est votre offre actuelle?",
