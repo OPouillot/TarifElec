@@ -24,7 +24,7 @@ def offre_to_column(offre):
     if offre == "EDF - Tempo":
         return ("cost_tempo", 'tempo', {'rouge': 'crimson', 'blanc': 'lightskyblue','bleu': 'royalblue'})
     if offre == "EDF - Zen Week-end":
-        return ("cost_zen_we", 'WE',  {False: 'royalblue', True: 'royalblue'})
+        return ("cost_zen_we", 'WE',  {False: 'royalblue', True: 'darkseagreen'})
     if offre == "EDF - Zen Week-end + Heures Creuses":
         return ("cost_zen_we_hc", 'HC_EDF', {'HP': 'royalblue', 'HC': 'lightblue'})
     if offre == "Autre fournisseur":
