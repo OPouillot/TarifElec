@@ -73,36 +73,37 @@ def main():
                 hc_stop = st.time_input("Fin HC", dt.time(4,30))
             puissance = st.number_input(label="Puissance souscrite (kVA)", value=6)
             
-            if hc_bool:
-                hc_prices = dict()
-                hc_hours = dict()
-                c1, c2 = st.columns(2)
-                with c1:
-                    other_abo = st.number_input("Prix de votre abonnement")
-                with c2:
-                    other_hp = st.number_input("Prix Heures Pleines (cts€/kWh)")
-                st.write("Ne remplir que les informations Heures Creuses utiles !")
-                c1, c2, c3 = st.columns(3)
-                with c1:
-                    hc_prices['HC1'] = st.number_input("Prix HC1 (cts€/kWh)")
-                    hc_prices['HC2'] = st.number_input("Prix HC2 (cts€/kWh)")
-                    hc_prices['HC3'] = st.number_input("Prix HC3 (cts€/kWh)")
-                with c2:
-                    hc_hours['HC1_start'] = st.time_input("Début HC1", dt.time(00, 00))
-                    hc_hours['HC2_start'] = st.time_input("Début HC2", dt.time(00, 00))
-                    hc_hours['HC3_start'] = st.time_input("Début HC3", dt.time(00, 00))
-                with c3:
-                    hc_hours['HC1_stop'] = st.time_input("Fin HC1", dt.time(00, 00))
-                    hc_hours['HC2_stop'] = st.time_input("Fin HC2", dt.time(00, 00))
-                    hc_hours['HC3_stop'] = st.time_input("Fin HC3", dt.time(00, 00))
-            else:
-                c1, c2 = st.columns(2)
-                with c1:
-                    other_abo = st.number_input("Prix de votre abonnement")
-                with c2:
-                    other_hp = st.number_input("Prix du kWh (cts€/kWh)")
-            if we_bool:
-                other_we = st.number_input("Prix Week-End (cts€/kWh)")
+            if other_bool:
+                if hc_bool:
+                    hc_prices = dict()
+                    hc_hours = dict()
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        other_abo = st.number_input("Prix de votre abonnement")
+                    with c2:
+                        other_hp = st.number_input("Prix Heures Pleines (cts€/kWh)")
+                    st.write("Ne remplir que les informations Heures Creuses utiles !")
+                    c1, c2, c3 = st.columns(3)
+                    with c1:
+                        hc_prices['HC1'] = st.number_input("Prix HC1 (cts€/kWh)")
+                        hc_prices['HC2'] = st.number_input("Prix HC2 (cts€/kWh)")
+                        hc_prices['HC3'] = st.number_input("Prix HC3 (cts€/kWh)")
+                    with c2:
+                        hc_hours['HC1_start'] = st.time_input("Début HC1", dt.time(00, 00))
+                        hc_hours['HC2_start'] = st.time_input("Début HC2", dt.time(00, 00))
+                        hc_hours['HC3_start'] = st.time_input("Début HC3", dt.time(00, 00))
+                    with c3:
+                        hc_hours['HC1_stop'] = st.time_input("Fin HC1", dt.time(00, 00))
+                        hc_hours['HC2_stop'] = st.time_input("Fin HC2", dt.time(00, 00))
+                        hc_hours['HC3_stop'] = st.time_input("Fin HC3", dt.time(00, 00))
+                else:
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        other_abo = st.number_input("Prix de votre abonnement")
+                    with c2:
+                        other_hp = st.number_input("Prix du kWh (cts€/kWh)")
+                if we_bool:
+                    other_we = st.number_input("Prix Week-End (cts€/kWh)")
             st.write("")
             st.write("")
             submit = st.form_submit_button("Charger données", on_click=submission)
