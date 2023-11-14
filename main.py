@@ -145,8 +145,6 @@ def main():
                 data = data_cleaner.data_completion(data, horaires_dict, horaires_other)
             else:
                 data = data_cleaner.data_completion(data, horaires_dict)
-            horaires_dict
-            data
 
             date_start = data.iloc[0,0].strftime("%d/%m/%Y")
             date_stop = data.iloc[-1,0].strftime("%d/%m/%Y")
@@ -170,8 +168,8 @@ def main():
             
             costs = st.session_state.cost
             data = st.session_state.data
-            data
             costs
+            
             date_start = data.iloc[0,0].strftime("%d/%m/%Y")
             date_stop = data.iloc[-1,0].strftime("%d/%m/%Y")
 
