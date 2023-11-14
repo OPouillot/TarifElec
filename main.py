@@ -16,6 +16,20 @@ st.set_page_config(
 def get_months(data: pd.DataFrame) -> str:
     return pd.to_datetime(data["Horaire"], utc=True).dt.strftime('%B %Y').unique()
 
+def offre_to_column(offre):
+    if offre == "EDF - Base":
+        return ("cost_base", None, None)
+    if offre == "EDF - Heures Creuses":
+        return ("cost_hc", 'HC_EDF', {'HP': 'royalblue', 'HC': 'lightblue'})
+    if offre == "EDF - Tempo":
+        return ("cost_tempo", 'tempo', {'rouge': 'crimson', 'blanc': 'lightskyblue','bleu': 'royalblue'})
+    if offre == "EDF - Zen Week-end":
+        return ("cost_zen_we", 'WE',  {False: 'royalblue', True: 'royalblue'})
+    if offre == "EDF - Zen Week-end + Heures Creuses":
+        return ("cost_zen_we_hc", 'HC_EDF', {'HP': 'royalblue', 'HC': 'lightblue'})
+    if offre == "Autre fournisseur":
+        return ("cost_other", 'HC_other', {'HP': 'royalblue'})
+
 def submission():
     st.session_state.form_sub = True
     st.session_state.calc_done = False
@@ -35,12 +49,6 @@ def main():
     with col2:
         st.title("TarifElec - Optimiser son abonnement d'électricité !")
     
-    tarif_base = pd.read_csv('data/tarifs/tarif_base.csv', sep=";")
-    tarif_hc = pd.read_csv('data/tarifs/tarif_hc.csv', sep=";")
-    tarif_tempo = pd.read_csv('data/tarifs/tarif_tempo.csv', sep=";")
-    tarif_zen_we = pd.read_csv('data/tarifs/tarif_zen_we.csv', sep=";")
-    tarif_zen_we_hc =  pd.read_csv('data/tarifs/tarif_zen_we_hc.csv', sep=";")
-
     with st.sidebar:
         offre_actu = st.selectbox("Quelle est votre offre actuelle?",
                                   ("EDF - Base", 
@@ -65,37 +73,36 @@ def main():
                 hc_stop = st.time_input("Fin HC", dt.time(4,30))
             puissance = st.number_input(label="Puissance souscrite (kVA)", value=6)
             
-            if other_bool:
+            if hc_bool:
                 hc_prices = dict()
                 hc_hours = dict()
-                if hc_bool:
-                    c1, c2 = st.columns(2)
-                    with c1:
-                        other_abo = st.number_input("Prix de votre abonnement")
-                    with c2:
-                        other_hp = st.number_input("Prix Heures Pleines (cts€/kWh)")
-                    st.write("Ne remplir que les informations Heures Creuses utiles !")
-                    c1, c2, c3 = st.columns(3)
-                    with c1:
-                        hc_prices['HC1'] = st.number_input("Prix HC1 (cts€/kWh)")
-                        hc_prices['HC2'] = st.number_input("Prix HC2 (cts€/kWh)")
-                        hc_prices['Hc3'] = st.number_input("Prix HC3 (cts€/kWh)")
-                    with c2:
-                        hc_hours['HC1_start'] = st.time_input("Début HC1", dt.time(00, 00))
-                        hc_hours['HC2_start'] = st.time_input("Début HC2", dt.time(00, 00))
-                        hc_hours['HC3_start'] = st.time_input("Début HC3", dt.time(00, 00))
-                    with c3:
-                        hc_hours['HC1_stop'] = st.time_input("Fin HC1", dt.time(00, 00))
-                        hc_hours['HC2_stop'] = st.time_input("Fin HC2", dt.time(00, 00))
-                        hc_hours['HC3_stop'] = st.time_input("Fin HC3", dt.time(00, 00))
-                else:
-                    c1, c2 = st.columns(2)
-                    with c1:
-                        other_abo = st.number_input("Prix de votre abonnement")
-                    with c2:
-                        other_hp = st.number_input("Prix du kWh (cts€/kWh)")
-                if we_bool:
-                    other_we = st.number_input("Prix Week-End (cts€/kWh)")
+                c1, c2 = st.columns(2)
+                with c1:
+                    other_abo = st.number_input("Prix de votre abonnement")
+                with c2:
+                    other_hp = st.number_input("Prix Heures Pleines (cts€/kWh)")
+                st.write("Ne remplir que les informations Heures Creuses utiles !")
+                c1, c2, c3 = st.columns(3)
+                with c1:
+                    hc_prices['HC1'] = st.number_input("Prix HC1 (cts€/kWh)")
+                    hc_prices['HC2'] = st.number_input("Prix HC2 (cts€/kWh)")
+                    hc_prices['HC3'] = st.number_input("Prix HC3 (cts€/kWh)")
+                with c2:
+                    hc_hours['HC1_start'] = st.time_input("Début HC1", dt.time(00, 00))
+                    hc_hours['HC2_start'] = st.time_input("Début HC2", dt.time(00, 00))
+                    hc_hours['HC3_start'] = st.time_input("Début HC3", dt.time(00, 00))
+                with c3:
+                    hc_hours['HC1_stop'] = st.time_input("Fin HC1", dt.time(00, 00))
+                    hc_hours['HC2_stop'] = st.time_input("Fin HC2", dt.time(00, 00))
+                    hc_hours['HC3_stop'] = st.time_input("Fin HC3", dt.time(00, 00))
+            else:
+                c1, c2 = st.columns(2)
+                with c1:
+                    other_abo = st.number_input("Prix de votre abonnement")
+                with c2:
+                    other_hp = st.number_input("Prix du kWh (cts€/kWh)")
+            if we_bool:
+                other_we = st.number_input("Prix Week-End (cts€/kWh)")
             st.write("")
             st.write("")
             submit = st.form_submit_button("Charger données", on_click=submission)
@@ -111,46 +118,42 @@ def main():
             }
 
             if other_bool:
-                tarifs_other = dict()
+                tarifs_other = {'HP': other_hp,
+                                'abo': other_abo}
                 horaires_other = dict()
-                for key, value in hc_prices.items():
-                    if value != 0:
-                        tarifs_other[key] = value
+                if hc_bool:
+                    for key, value in hc_prices.items():
+                        if value != 0:
+                            tarifs_other[key] = value
+                            if (hc_hours[key+'_start'] != dt.time(00,00) and hc_hours[key+'_stop'] != dt.time(00,00)):
+                                horaires_other[key] = (hc_hours[key+'_start'], hc_hours[key+'_stop'])
+                            else: 
+                                st.warning("Il y a une erreur dans le renseignement des données ", key)
                 if we_bool:
                     tarifs_other['WE'] = other_we
-                tarifs_other['HP'] = other_hp
-                tarifs_other['abo'] = other_abo
-
-                for key, value in hc_prices.items():
-                    if value != 0:
-                        if (hc_hours[key+'_start'] != dt.time(00,00) and hc_hours[key+'_stop'] != dt.time(00,00)):
-                            horaires_other[key] = (hc_hours[key+'_start'], hc_hours[key+'_stop'])
-                        else: 
-                            st.warning("Il y a une erreur dans le renseignement des données ", key)
-                horaires_dict.update(horaires_other)
 
 
             file = pd.read_csv(loaded_file, sep=";")
 
             data = file.iloc[2:,0:2]
             data.rename(columns={'Identifiant PRM': "Horaire", "Type de donnees": "Puissance"}, inplace=True)
-            data.reset_index(drop=True)
+            data.reset_index(drop=True, inplace=True)
             data = data_cleaner.missing_values(data)
             data = data_cleaner.split_hours(data)
-            data = data_cleaner.data_completion(data, horaires_dict)
+            if other_bool:
+                data = data_cleaner.data_completion(data, horaires_dict, horaires_other)
+            else:
+                data = data_cleaner.data_completion(data, horaires_dict)
+            horaires_dict
+            data
 
             date_start = data.iloc[0,0].strftime("%d/%m/%Y")
             date_stop = data.iloc[-1,0].strftime("%d/%m/%Y")
 
-            costs = pd.DataFrame(data=[cost_calc.prix_base(data, puissance, tarif_base),
-                                        cost_calc.prix_hc(data, puissance, tarif_hc),
-                                        cost_calc.prix_tempo(data, puissance, tarif_tempo),
-                                        cost_calc.prix_zen_we(data, puissance, tarif_zen_we),
-                                        cost_calc.prix_zen_we_hc(data, puissance, tarif_zen_we_hc)],
-                                columns=['Abonnement', 'Coût Total'])
             if other_bool:
-                costs = pd.concat([costs,pd.DataFrame([cost_calc.prix_other_supplier(data, tarifs_other, horaires_other, is_we=we_bool)])], ignore_index=True)
-            
+                costs = cost_calc.calc_costs(data, puissance, tarifs_other, horaires_other, is_we=we_bool)
+            else:
+                costs = cost_calc.calc_costs(data, puissance)
             reference_cost = costs.loc[costs["Abonnement"] == offre_actu, "Coût Total"].values[0]
             costs['Pourcentage'] = ((costs['Coût Total'] - reference_cost) / reference_cost) * 100
             st.session_state.cost = costs
@@ -163,12 +166,13 @@ def main():
         tab1, tab2 = st.tabs(["Comparatifs", "Ma consommation"])
 
         with tab1:
+            
             costs = st.session_state.cost
             data = st.session_state.data
-            date_start = data.iloc[0,0].strftime("%d/%m/%Y")
-            date_stop = data.iloc[-1,0].strftime("%d/%m/%Y")
             data
             costs
+            date_start = data.iloc[0,0].strftime("%d/%m/%Y")
+            date_stop = data.iloc[-1,0].strftime("%d/%m/%Y")
 
             col1, col2 = st.columns(2)
             with col1:
@@ -184,14 +188,42 @@ def main():
             # Faire une selectbox avec les mois dispos dans les data user
             months = get_months(data)
             month_selected = st.selectbox("Choisissez le mois à observer", months)
-
-            day_power = data.groupby(pd.to_datetime(data['Horaire'], utc=True).dt.date)['Puissance'].sum() / 2000
-            day_power = pd.DataFrame(day_power)
-            day_power.reset_index(inplace=True)
-            max_power = day_power["Puissance"].max()
-            month_power = day_power.loc[pd.to_datetime(day_power["Horaire"], utc=True).dt.strftime('%B %Y') == month_selected]
-            fig_month = px.bar(month_power, x="Horaire", y="Puissance", title=f"Consommation {month_selected}", range_y=[0,max_power])
-            st.plotly_chart(fig_month, use_container_width=True)
+            if other_bool:
+                offre_choice = ("EDF - Base",
+                                "EDF - Heures Creuses",
+                                "EDF - Tempo",
+                                "EDF - Zen Week-end",
+                                "EDF - Zen Week-end + Heures Creuses",
+                                "Autre fournisseur")
+            else:
+                offre_choice = ("EDF - Base",
+                                "EDF - Heures Creuses",
+                                "EDF - Tempo",
+                                "EDF - Zen Week-end",
+                                "EDF - Zen Week-end + Heures Creuses")
+            col1, col2 = st.columns([4,1])
+            with col2:
+                w_euro = st.radio("Conso en :", ["kWh", "€"])
+                offre = st.selectbox("Voir selon quelle offre ?", offre_choice, disabled=(w_euro=="kWh"))
+                if w_euro == "€":
+                    value, splitter, colors = offre_to_column(offre)
+                    groupper = [data['Horaire'].apply(lambda x: x.date()), splitter] if splitter else [data['Horaire'].apply(lambda x: x.date())]
+                    day_power = data.groupby(groupper)[value].sum()
+                    day_power = pd.DataFrame(day_power)
+                    day_power.reset_index(inplace=True)
+                    max_power = day_power[value].max()
+                    month_power = day_power.loc[day_power["Horaire"].apply(lambda x: x.strftime('%B %Y')) == month_selected]
+                    fig_month = px.bar(month_power, x="Horaire", y=value, title=f"Consommation {month_selected}", color=splitter, color_discrete_map=colors, range_y=[0,max_power])
+                else:
+                    day_power = data.groupby(pd.to_datetime(data['Horaire'], utc=True).dt.date)['Puissance'].sum() / 2000
+                    day_power = pd.DataFrame(day_power)
+                    day_power.reset_index(inplace=True)
+                    max_power = day_power["Puissance"].max()
+                    month_power = day_power.loc[pd.to_datetime(day_power["Horaire"], utc=True).dt.strftime('%B %Y') == month_selected]
+                    fig_month = px.bar(month_power, x="Horaire", y="Puissance", title=f"Consommation {month_selected}", range_y=[0,max_power])
+            
+            with col1:
+                st.plotly_chart(fig_month, use_container_width=True)
 
     else:
         st.write("")
