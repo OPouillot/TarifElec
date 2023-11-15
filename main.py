@@ -203,23 +203,20 @@ def main():
             col1, col2 = st.columns([4,1])
             with col2:
                 w_euro = st.radio("Conso en :", ["kWh", "€"])
-                offre = st.selectbox("Voir selon quelle offre ?", offre_choice, disabled=(w_euro=="kWh"))
+                offre = st.selectbox("Voir selon quelle offre ?", offre_choice)
                 if w_euro == "€":
                     value, splitter, colors = offre_to_column(offre)
                     groupper = [data['Horaire'].apply(lambda x: x.date()), splitter] if splitter else [data['Horaire'].apply(lambda x: x.date())]
                     day_power = data.groupby(groupper)[value].sum()
-                    day_power = pd.DataFrame(day_power)
-                    day_power.reset_index(inplace=True)
-                    max_power = day_power[value].max()
-                    month_power = day_power.loc[day_power["Horaire"].apply(lambda x: x.strftime('%B %Y')) == month_selected]
-                    fig_month = px.bar(month_power, x="Horaire", y=value, title=f"Consommation {month_selected}", color=splitter, color_discrete_map=colors, range_y=[0,max_power])
                 else:
-                    day_power = data.groupby(pd.to_datetime(data['Horaire'], utc=True).dt.date)['Puissance'].sum() / 2000
-                    day_power = pd.DataFrame(day_power)
-                    day_power.reset_index(inplace=True)
-                    max_power = day_power["Puissance"].max()
-                    month_power = day_power.loc[pd.to_datetime(day_power["Horaire"], utc=True).dt.strftime('%B %Y') == month_selected]
-                    fig_month = px.bar(month_power, x="Horaire", y="Puissance", title=f"Consommation {month_selected}", range_y=[0,max_power])
+                    value, splitter, colors = offre_to_column(offre)
+                    value = "Puissance"
+                    groupper = [data['Horaire'].apply(lambda x: x.date()), splitter] if splitter else [data['Horaire'].apply(lambda x: x.date())]
+                    day_power = data.groupby(groupper)[value].sum() / 2000
+                day_power = pd.DataFrame(day_power)
+                day_power.reset_index(inplace=True)
+                month_power = day_power.loc[day_power["Horaire"].apply(lambda x: x.strftime('%B %Y')) == month_selected]
+                fig_month = px.bar(month_power, x="Horaire", y=value, title=f"Consommation {month_selected}", color=splitter, color_discrete_map=colors) 
             
             with col1:
                 st.plotly_chart(fig_month, use_container_width=True)
