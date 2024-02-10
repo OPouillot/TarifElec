@@ -56,7 +56,7 @@ def is_tempo(data: pd.DataFrame, tempo_blanc: list[datetime], tempo_rouge: list[
     # Affecter les étiquettes correspondantes au DataFrame
     data['tempo'] = 'bleu'
     data.loc[data["Horaire"].apply(lambda x: (x.month, x.day) in is_white), 'tempo'] = 'blanc'
-    data.loc[data["Horaire"].apply(lambda x: (x.month, x.day) in is_red), 'tempo'] = 'rouge'
+    data.loc[data["Horaire"].apply(lambda x: (x.month, x.day) in is_red), 'tempo'] = 'rouge' 
 
     return data
 
