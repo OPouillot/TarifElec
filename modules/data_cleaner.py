@@ -43,12 +43,21 @@ def is_we(data: pd.DataFrame) -> bool:
 
 
 def is_tempo(data: pd.DataFrame, tempo_blanc: list[datetime], tempo_rouge: list[datetime]) -> bool:
-    is_white = data["Horaire"].apply(lambda x: x.date()).isin(tempo_blanc)
-    is_red = data["Horaire"].apply(lambda x: x.date()).isin(tempo_rouge)
+    tempo_blanc_jour_mois = set([(date.month, date.day) for date in tempo_blanc])
+    tempo_rouge_jour_mois = set([(date.month, date.day) for date in tempo_rouge])
 
+    # Extraire le mois et le jour de chaque date dans le DataFrame
+    data_jour_mois = set([(x.month, x.day) for x in data["Horaire"]])
+
+    # Déterminer les dates correspondantes dans les listes tempo_blanc et tempo_rouge
+    is_white = data_jour_mois.intersection(tempo_blanc_jour_mois)
+    is_red = data_jour_mois.intersection(tempo_rouge_jour_mois)
+
+    # Affecter les étiquettes correspondantes au DataFrame
     data['tempo'] = 'bleu'
-    data.loc[is_white, 'tempo'] = 'blanc'
-    data.loc[is_red, 'tempo'] = 'rouge'
+    data.loc[data["Horaire"].apply(lambda x: (x.month, x.day) in is_white), 'tempo'] = 'blanc'
+    data.loc[data["Horaire"].apply(lambda x: (x.month, x.day) in is_red), 'tempo'] = 'rouge'
+
     return data
 
 
@@ -104,8 +113,8 @@ def data_completion(data: pd.DataFrame, horaires_dict: dict[str, tuple[dt.time, 
     blanc = tempo_days['Tempo_blanc'].dropna()
     rouge = tempo_days['Tempo_rouge'].dropna()
     
-    tempo_blanc = [datetime.strptime(date, "%d/%m/%Y").date().strftime("%d/%m") for date in blanc]
-    tempo_rouge = [datetime.strptime(date, "%d/%m/%Y").date().strftime("%d/%m") for date in rouge]
+    tempo_blanc = [datetime.strptime(date, "%d/%m/%Y").date() for date in blanc]
+    tempo_rouge = [datetime.strptime(date, "%d/%m/%Y").date() for date in rouge]
 
     # Ajout des colonnes pour stocker les booléens
     data = is_we(data)
