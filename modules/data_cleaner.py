@@ -104,8 +104,8 @@ def data_completion(data: pd.DataFrame, horaires_dict: dict[str, tuple[dt.time, 
     blanc = tempo_days['Tempo_blanc'].dropna()
     rouge = tempo_days['Tempo_rouge'].dropna()
     
-    tempo_blanc = [datetime.strptime(date, "%d/%m/%Y").date() for date in blanc]
-    tempo_rouge = [datetime.strptime(date, "%d/%m/%Y").date() for date in rouge]
+    tempo_blanc = [datetime.strptime(date, "%d/%m/%Y").date().strftime("%d/%m") for date in blanc]
+    tempo_rouge = [datetime.strptime(date, "%d/%m/%Y").date().strftime("%d/%m") for date in rouge]
 
     # Ajout des colonnes pour stocker les booléens
     data = is_we(data)
